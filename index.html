@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carta Romántica Animada 💖</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-pink: #ff85a1;
+        --secondary-pink: #ffb7c5;
+        --accent-purple: #ce93d8;
+        --white: #ffffff;
+        --text-color: #4a4a4a;
+        --no-move-range-x: 120px;
+        --no-move-range-y: 80px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(
+          135deg,
+          #fce4ec 0%,
+          #f3e5f5 50%,
+          #ffffff 100%
+        );
+        background-attachment: fixed; /* Mantiene el fondo quieto al hacer scroll */
+        background-size: cover;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        perspective: 1000px;
+        padding: 0;
+        margin: 0;
+      }
+
+      /* --- Corazones flotantes de fondo --- */
+      #hearts-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .floating-heart {
+        position: absolute;
+        color: var(--secondary-pink);
+        font-size: 20px;
+        animation: float linear infinite;
+        opacity: 0.6;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-10vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* --- Controles --- */
+      #music-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid var(--primary-pink);
+        padding: 10px 15px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--primary-pink);
+        transition: all 0.3s ease;
+        z-index: 100;
+        font-size: 14px;
+      }
+
+      #music-btn:hover {
+        background: var(--primary-pink);
+        color: white;
+      }
+
+      /* --- Contenedor Principal --- */
+      .container {
+        text-align: center;
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+      }
+
+      #main-title {
+        color: var(--primary-pink);
+        margin-bottom: 30px;
+        font-size: 2rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* --- Sobre Animado --- */
+      .envelope-wrapper {
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        margin: 0 auto;
+        width: 300px;
+        height: 200px;
+      }
+
+      .envelope-wrapper.open {
+        transform: scale(0.9); /* Solo un pequeño escalado para dar dinamismo */
+      }
+
+      .envelope {
+        position: relative;
+        width: 300px;
+        height: 200px;
+        background-color: var(--white);
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: 0.4s;
+        background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+        z-index: 5;
+      }
+
+      /* Efecto de brillo en el sobre */
+      .envelope::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: translateX(-100%);
+        transition: 0.5s;
+      }
+      .envelope-wrapper:hover .envelope::after {
+        transform: translateX(100%);
+      }
+
+      .flap {
+        position: absolute;
+        top: 0;
+        width: 300px;
+        height: 150px;
+        background-color: #ffcad4;
+        border-radius: 10px 10px 0 0;
+        transform-origin: top;
+        transition:
+          transform 0.6s ease,
+          z-index 0.2s;
+        z-index: 10;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+      }
+
+      /* Lados del sobre */
+      .envelope-front {
+        position: absolute;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 150px 100px 150px;
+        border-color: transparent transparent #ffe5ec transparent;
+        z-index: 15;
+      }
+
+      .envelope-left {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 100px 0 100px 150px;
+        border-color: transparent transparent transparent #fff0f3;
+        z-index: 14;
+      }
+
+      .envelope-right {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 100px 150px 100px 0;
+        border-color: transparent #fff0f3 transparent transparent;
+        z-index: 14;
+      }
+
+      /* --- Carta --- */
+      .letter {
+        position: absolute;
+        bottom: 15px;
+        left: 10px;
+        width: 280px;
+        height: 170px;
+        background: white;
+        padding: 20px;
+        text-align: left;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition:
+          transform 1s cubic-bezier(0.4, 0, 0.2, 1),
+          z-index 0.5s step-end;
+        z-index: 6;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden; /* Oculta el botón No si se movió fuera */
+      }
+
+      .letter-content {
+        font-family: "Dancing Script", cursive;
+        font-size: 1.3rem;
+        color: var(--text-color);
+        line-height: 1.6;
+        overflow-y: auto;
+        max-height: 55vh;
+        padding-right: 15px;
+        margin-bottom: 20px;
+      }
+
+      .letter-content p {
+        margin-bottom: 10px;
+      }
+
+      /* --- Estados Animados --- */
+      .envelope-wrapper.open .flap {
+        transform: rotateX(180deg);
+        z-index: 4;
+      }
+
+      .envelope-wrapper.open .letter {
+        transform: translate(-50%, -50%) scale(1);
+        height: auto;
+        max-width: 900px;
+        width: 92vw;
+        min-height: 80vh;
+        z-index: 1000;
+        position: fixed;
+        top: 50%; 
+        left: 50%;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.15);
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        animation: popHorizontal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        overflow: visible; /* Permite que el botón No se mueva fuera del papel cuando está abierta */
+      }
+
+      @keyframes popHorizontal {
+        0% {
+          transform: translate(-50%, -10%) scale(0.5);
+          opacity: 0;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* --- Botones en la carta --- */
+      .buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        gap: 10px;
+        position: relative;
+        min-height: 50px; /* Asegura espacio para el botón que escapa */
+      }
+
+      .btn {
+        padding: 10px 25px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-family: "Poppins", sans-serif;
+        font-size: 1rem;
+      }
+
+      #yes-btn {
+        background-color: var(--primary-pink);
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 133, 161, 0.4);
+      }
+
+      #yes-btn:hover {
+        transform: scale(1.1);
+        background-color: #ff5e84;
+      }
+
+      #no-btn {
+        background-color: #e0e0e0;
+        color: #666;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 100;
+        position: relative;
+      }
+
+      /* --- Botón Cerrar --- */
+      #close-btn {
+        margin-top: 20px;
+        background: #fffafa;
+        color: var(--primary-pink);
+        border: 2px solid var(--primary-pink);
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        display: none; /* Se controla por clase */
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        align-self: center; /* Centrado dentro de la carta */
+      }
+
+      #close-btn.visible {
+        display: block;
+      }
+
+      /* --- Modal de Éxito --- */
+      #success-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.95);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .success-content {
+        background: white;
+        padding: 50px;
+        border-radius: 20px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+        animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes popIn {
+        0% {
+          transform: scale(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .success-content h2 {
+        color: var(--primary-pink);
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        font-family: "Dancing Script", cursive;
+      }
+
+      /* --- Responsivo --- */
+      @media (max-width: 600px) {
+        :root {
+          --no-move-range-x: 40px;
+          --no-move-range-y: 30px;
+        }
+        .envelope-wrapper, .envelope, .flap { width: 250px; }
+        .envelope-front { border-width: 0 125px 80px 125px; }
+        .envelope-left { border-width: 80px 0 80px 125px; }
+        .envelope-right { border-width: 80px 125px 80px 0; }
+        .envelope-wrapper.open .letter {
+          width: 95vw;
+          padding: 20px 15px;
+          min-height: 80vh;
+          max-height: 90vh;
+          top: 50%;
+        }
+        .letter-content {
+          font-size: 1.1rem;
+          max-height: 50vh;
+          line-height: 1.4;
+        }
+        .btn { padding: 10px 15px; font-size: 0.9rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Corazones de fondo -->
+    <div id="hearts-container"></div>
+
+    <!-- Botón Música -->
+    <button id="music-btn">🎵 Música: OFF</button>
+
+    <!-- Audios -->
+    <audio id="bg-music" loop>
+      <source
+        src="https://cdn.pixabay.com/audio/2022/08/02/audio_884b9bc146.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+    <audio id="open-sound">
+      <source
+        src="https://www.myinstants.com/media/sounds/paper-crinkle.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+
+    <div class="container">
+      <h1 id="main-title">Tienes una carta 💖</h1>
+
+      <div class="envelope-wrapper" id="envelope-wrapper">
+        <div class="flap"></div>
+        <div class="envelope"></div>
+        <div class="envelope-left"></div>
+        <div class="envelope-right"></div>
+        <div class="envelope-front"></div>
+
+        <div class="letter" id="letter">
+          <div class="letter-content" id="letter-text">
+            <p>Holaaa 😌💖</p>
+            <p>
+              Te dije que te iba a hacer algo… quería impresionarte un poquito (funciona, ¿sí o no? 😂)
+            </p>
+            <p>
+              La verdad es que llevamos poquito hablando, pero ya me caes
+              demasiado bien (Y si esto sigue así… 
+              me vas a tener pensando en ti todo el día 😳).
+            </p>
+            <p>Así que… tengo una pregunta importante:</p>
+            <p style="text-align: center; font-weight: bold; font-size: 1.3rem">
+              ¿Quieres ser mi San Valentín? 👀💘
+            </p>
+            <p
+              style="
+                text-align: center;
+                font-size: 0.8rem;
+                font-family: &quot;Poppins&quot;;
+              "
+            >
+              (Respuesta correcta: sí 😌😂)
+            </p>
+            <p style="margin-top: 20px; text-align: right">
+              Att: El amor de tu vida (yo)
+            </p>
+          </div>
+          <div class="buttons">
+            <button class="btn" id="yes-btn">Sí 😍</button>
+            <button class="btn" id="no-btn">No 😢</button>
+          </div>
+          <button id="close-btn">Cerrar carta ✉️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Éxito -->
+    <div id="success-modal">
+      <div class="success-content">
+        <h2>Dijo que siiiii! 🎉</h2>
+        <p>Me hace feliz pasar contigo este 14 de febrero</p>
+        <button
+          class="btn"
+          onclick="closeModal()"
+          style="margin-top: 20px; background: #ce93d8; color: white"
+        >
+          Cerrar 🌸
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const envelopeWrapper = document.getElementById("envelope-wrapper");
+      const musicBtn = document.getElementById("music-btn");
+      const bgMusic = document.getElementById("bg-music");
+      const openSound = document.getElementById("open-sound");
+      const closeBtn = document.getElementById("close-btn");
+      const yesBtn = document.getElementById("yes-btn");
+      const noBtn = document.getElementById("no-btn");
+      const successModal = document.getElementById("success-modal");
+      const mainTitle = document.getElementById("main-title");
+      const heartsContainer = document.getElementById("hearts-container");
+
+      let musicPlaying = false;
+
+      // --- Música ---
+      musicBtn.addEventListener("click", () => {
+        if (musicPlaying) {
+          bgMusic.pause();
+          musicBtn.innerText = "🎵 Música: OFF";
+        } else {
+          bgMusic.play().catch((e) => console.log("Error playing music:", e));
+          musicBtn.innerText = "🎵 Música: ON";
+        }
+        musicPlaying = !musicPlaying;
+      });
+
+      // --- Abrir Sobre ---
+      envelopeWrapper.addEventListener("click", (e) => {
+        if (envelopeWrapper.classList.contains("open")) return;
+
+        envelopeWrapper.classList.add("open");
+        mainTitle.style.opacity = "0";
+        setTimeout(() => {
+          closeBtn.classList.add("visible");
+        }, 800);
+
+        openSound.play().catch((e) => {});
+      });
+
+      // --- Cerrar Sobre ---
+      closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        envelopeWrapper.classList.remove("open");
+        closeBtn.classList.remove("visible");
+        mainTitle.style.opacity = "1";
+        
+        // Resetear la posición del botón No al cerrar
+        noBtn.style.transform = "translate(0, 0)";
+      });
+
+      // --- Botón No (Escurridizo) ---
+      noBtn.addEventListener("mouseover", moveNoButton);
+      noBtn.addEventListener("click", moveNoButton);
+
+      function moveNoButton() {
+        // Obtenemos los rangos desde CSS para que varíen en móvil
+        const style = getComputedStyle(document.documentElement);
+        const maxX = parseInt(style.getPropertyValue('--no-move-range-x'));
+        const maxY = parseInt(style.getPropertyValue('--no-move-range-y'));
+        
+        const randomX = (Math.random() - 0.5) * maxX * 2;
+        const randomY = (Math.random() - 0.5) * maxY * 2;
+
+        noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+      }
+
+      // --- Botón Sí ---
+      yesBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        successModal.style.display = "flex";
+        createConfetti();
+      });
+
+      function closeModal() {
+        successModal.style.display = "none";
+      }
+
+      // --- Corazones de Fondo ---
+      function createFloatingHeart() {
+        const heart = document.createElement("div");
+        heart.classList.add("floating-heart");
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = Math.random() * 3 + 3 + "s";
+        heart.style.fontSize = Math.random() * 20 + 10 + "px";
+        heartsContainer.appendChild(heart);
+
+        setTimeout(() => {
+          heart.remove();
+        }, 6000);
+      }
+
+      setInterval(createFloatingHeart, 500);
+
+      // --- Confeti de corazones ---
+      function createConfetti() {
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement("div");
+            confetti.classList.add("floating-heart");
+            confetti.innerHTML = ["❤️", "💖", "💝", "✨", "🌸"][
+              Math.floor(Math.random() * 5)
+            ];
+            confetti.style.left = "50vw";
+            confetti.style.top = "50vh";
+            confetti.style.position = "fixed";
+            confetti.style.zIndex = "1001";
+
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 10 + 5;
+            const vx = Math.cos(angle) * velocity;
+            const vy = Math.sin(angle) * velocity;
+
+            let posX = 50;
+            let posY = 50;
+
+            document.body.appendChild(confetti);
+
+            let frame = 0;
+            const interval = setInterval(() => {
+              frame++;
+              posX += vx;
+              posY += vy;
+              confetti.style.left = `calc(50vw + ${posX}px)`;
+              confetti.style.top = `calc(50vh + ${posY}px)`;
+              confetti.style.opacity = 1 - frame / 100;
+
+              if (frame > 100) {
+                clearInterval(interval);
+                confetti.remove();
+              }
+            }, 20);
+          }, i * 20);
+        }
+      }
+    </script>
+  </body>
+</html>
